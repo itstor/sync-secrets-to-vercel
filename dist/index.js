@@ -24991,7 +24991,7 @@ function parseAndFilterSecrets(githubSecrets, regex) {
     const parsedSecretsObj = {};
     Object.entries(parsedSecrets).forEach(([key, value]) => {
         if (regex.test(key)) {
-            parsedSecretsObj[key] = value.replace(regex, '');
+            parsedSecretsObj[key.replace(regex, '')] = value;
         }
     });
     return parsedSecretsObj;
