@@ -29,7 +29,7 @@ export function parseAndFilterSecrets(githubSecrets: string, regex: RegExp): Rec
   Object.entries(parsedSecrets).forEach(([key, value]: [string, unknown]) => {
     if (regex.test(key)) {
       const strippedKey = key.replace(regex, '');
-      core.info(`Listing secret: ${strippedKey}`);
+      core.debug(`Listing secret: ${strippedKey}, with value: ${key}`);
       parsedSecretsObj[strippedKey] = value as string;
     }
   });

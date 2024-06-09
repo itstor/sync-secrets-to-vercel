@@ -25016,7 +25016,7 @@ function parseAndFilterSecrets(githubSecrets, regex) {
     Object.entries(parsedSecrets).forEach(([key, value]) => {
         if (regex.test(key)) {
             const strippedKey = key.replace(regex, '');
-            core.info(`Listing secret: ${strippedKey}`);
+            core.debug(`Listing secret: ${strippedKey}, with value: ${key}`);
             parsedSecretsObj[strippedKey] = value;
         }
     });
