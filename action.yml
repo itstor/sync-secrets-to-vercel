@@ -1,5 +1,5 @@
-name: Sync GitHub Secrets to Vercel Environment
-description: Sync GitHub Secrets to Vercel Environment
+name: Sync Secrets to Vercel
+description: Sync Repository Secrets to Vercel Environment
 author: Akhmad Thoriq
 inputs:
   regex:
