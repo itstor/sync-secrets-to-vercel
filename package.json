@@ -2,7 +2,7 @@
   "name": "sync-secrets-to-vercel",
   "version": "1.0.0",
   "description": "Sync GitHub secrets to Vercel env",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "build": "ncc build src/index.ts -o dist",
     "release": "ncc build src/index.ts -o dist && git add -f dist/",
