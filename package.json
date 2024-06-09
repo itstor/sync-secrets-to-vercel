@@ -1,0 +1,44 @@
+{
+  "name": "sync-secrets-to-vercel",
+  "version": "1.0.0",
+  "description": "Sync GitHub secrets to Vercel env",
+  "main": "index.js",
+  "scripts": {
+    "build": "ncc build src/index.ts -o dist",
+    "release": "ncc build src/index.ts -o dist && git add -f dist/",
+    "lint": "eslint **/*.ts"
+  },
+  "author": {
+    "name": "Akhmad Thoriq",
+    "email": "ahmdthoriq5@gmail.com",
+    "url": "https://github.com/itstor"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/itstor/vercel-env-secret-action#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/itstor/vercel-env-secret-action.git"
+  },
+  "bugs": {
+    "url": "https://github.com/itstor/vercel-env-secret-action/issues"
+  },
+  "dependencies": {
+    "@actions/core": "^1.10.1"
+  },
+  "devDependencies": {
+    "@tsconfig/recommended": "^1.0.6",
+    "@types/node": "^20.14.2",
+    "@typescript-eslint/eslint-plugin": "^7.12.0",
+    "@typescript-eslint/parser": "^7.12.0",
+    "@vercel/ncc": "^0.38.1",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "eslint-plugin-simple-import-sort": "^12.1.0",
+    "eslint-plugin-unused-imports": "^3.2.0",
+    "prettier": "^3.3.1",
+    "rimraf": "^5.0.7",
+    "typescript": "^5.4.5"
+  }
+}
