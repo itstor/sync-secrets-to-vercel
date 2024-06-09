@@ -3,11 +3,11 @@ description: Sync Repository Secrets to Vercel Environment
 author: Akhmad Thoriq
 inputs:
   regex:
-    description: Regex to match  the GitHub Secrets. For example `^PROD_ENV_.*$`
+    description: Regex to match  the GitHub Secrets
     required: false
     default: ^.*$
   environments:
-    description: The name of the Vercel Environment. If multiple, separate with comma. For example `development,preview`
+    description: The name of the Vercel Environment. If multiple, separate with comma
     required: false
     default: production
   project:
@@ -20,7 +20,7 @@ inputs:
     description: The Vercel Token.
     required: true
   secrets:
-    description: The GitHub secrets encoded in JSON format. You can use this `${{ toJSON(secrets) }}`
+    description: The GitHub secrets encoded in JSON format
     required: true
 
 runs:

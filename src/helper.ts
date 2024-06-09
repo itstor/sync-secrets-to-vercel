@@ -26,7 +26,7 @@ export function parseAndFilterSecrets(githubSecrets: string, regex: RegExp): Rec
 
   Object.entries(parsedSecrets).forEach(([key, value]: [string, unknown]) => {
     if (regex.test(key)) {
-      parsedSecretsObj[key] = value as string;
+      parsedSecretsObj[key] = (value as string).replace(regex, '');
     }
   });
 

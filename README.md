@@ -8,14 +8,14 @@ This action automates the synchronization of Repository Secrets to Vercel enviro
 
 ## Inputs
 
-| Name           | Description                                                                                                                      | Required | Default      |
-| -------------- | -------------------------------------------------------------------------------------------------------------------------------- | -------- | ------------ |
-| `regex`        | Regex to match the Repository Secrets. For example `^PROD_ENV_.*$`                                                               | false    | `^.*$`       |
-| `environments` | The name of the Vercel Environment. If multiple, separate with a comma. For example `development,preview`                        | false    | `production` |
-| `project`      | The name of the Vercel Project.                                                                                                  | true     |              |
-| `team_id`      | The ID of the Vercel Team.                                                                                                       | true     |              |
-| `token`        | The Vercel Token.                                                                                                                | true     |              |
-| `secrets`      | The Repository secrets encoded in JSON format. You can use this `${{ toJSON(secrets) }}` to include all your Repository secrets. | true     |              |
+| Name           | Description                                                                                                                                                                                                              | Required | Default      |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ------------ |
+| `regex`        | Regex to match the Repository Secrets. For example `^PROD_ENV_.*$`. This regular expression will be removed from the Environment Key. Therefore, if you have `PROD_ENV_HELLO`, it will be deployed to Vercel as `HELLO`. | false    | `^.*$`       |
+| `environments` | The name of the Vercel Environment. If multiple, separate with a comma. For example `development,preview`                                                                                                                | false    | `production` |
+| `project`      | The name of the Vercel Project.                                                                                                                                                                                          | true     |              |
+| `team_id`      | The ID of the Vercel Team.                                                                                                                                                                                               | true     |              |
+| `token`        | The Vercel Token.                                                                                                                                                                                                        | true     |              |
+| `secrets`      | The Repository secrets encoded in JSON format. You can use this `${{ toJSON(secrets) }}` to include all your Repository secrets.                                                                                         | true     |              |
 
 ## Example Usage
 
