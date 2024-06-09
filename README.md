@@ -34,7 +34,7 @@ jobs:
       - name: Sync Repository Secrets to Vercel
         uses: itstor/sync-secrets-to-vercel@v1
         with:
-          regex: 'PROD_ENV_'
+          prefix: 'PROD_ENV_'
           environments: 'production'
           project: ${{ secrets.VERCEL_PROJECT }}
           team_id: ${{ secrets.VERCEL_TEAM_ID }}
