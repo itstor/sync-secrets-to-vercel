@@ -1,3 +1,5 @@
+import * as core from '@actions/core';
+
 import { CategorizedEnvironment, Environment, VercelEnvironmentResponse } from './types';
 
 export function validateRegex(regex: string): RegExp {
@@ -26,7 +28,9 @@ export function parseAndFilterSecrets(githubSecrets: string, regex: RegExp): Rec
 
   Object.entries(parsedSecrets).forEach(([key, value]: [string, unknown]) => {
     if (regex.test(key)) {
-      parsedSecretsObj[key.replace(regex, '')] = value as string;
+      const strippedKey = key.replace(regex, '');
+      core.info(`Listing secret: ${strippedKey}`);
+      parsedSecretsObj[strippedKey] = value as string;
     }
   });
 
