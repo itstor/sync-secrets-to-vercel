@@ -8,14 +8,15 @@ This action automates the synchronization of Repository Secrets to Vercel enviro
 
 ## Inputs
 
-| Name           | Description                                                                                                                                                                                                              | Required | Default      |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ------------ |
-| `regex`        | Regex to match the Repository Secrets. For example `^PROD_ENV_.*$`. This regular expression will be removed from the Environment Key. Therefore, if you have `PROD_ENV_HELLO`, it will be deployed to Vercel as `HELLO`. | false    | `^.*$`       |
-| `environments` | The name of the Vercel Environment. If multiple, separate with a comma. For example `development,preview`                                                                                                                | false    | `production` |
-| `project`      | The name of the Vercel Project.                                                                                                                                                                                          | true     |              |
-| `team_id`      | The ID of the Vercel Team.                                                                                                                                                                                               | true     |              |
-| `token`        | The Vercel Token.                                                                                                                                                                                                        | true     |              |
-| `secrets`      | The Repository secrets encoded in JSON format. You can use this `${{ toJSON(secrets) }}` to include all your Repository secrets.                                                                                         | true     |              |
+| Name             | Description                                                                                                                                                                                       | Required | Default      |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------------ |
+| `prefix`         | Prefix for the secrets to sync. For example `PROD_ENV_`. This prefix will be removed from the Environment Key. Therefore, if you have `PROD_ENV_HELLO`, it will be deployed to Vercel as `HELLO`. | false    | `ENV_`       |
+| `environments`   | The name of the Vercel Environment. If multiple, separate with a comma. For example `development,preview`                                                                                         | false    | `production` |
+| `project`        | The name of the Vercel Project.                                                                                                                                                                   | true     |              |
+| `team_id`        | The ID of the Vercel Team.                                                                                                                                                                        | true     |              |
+| `token`          | The Vercel Token.                                                                                                                                                                                 | true     |              |
+| `secrets`        | The Repository secrets encoded in JSON format. You can use this `${{ toJSON(secrets) }}` to include all your Repository secrets.                                                                  | true     |              |
+| `cancel_on_fail` | Cancel the workflow if one of the secrets fails to sync.                                                                                                                                          | false    | `true`       |
 
 ## Example Usage
 
@@ -33,10 +34,10 @@ jobs:
       - name: Sync Repository Secrets to Vercel
         uses: itstor/sync-secrets-to-vercel@v1
         with:
-          regex: '^PROD_ENV_.*$'
-          environments: 'development,preview'
-          project: 'your-vercel-project'
+          regex: 'PROD_ENV_'
+          environments: 'production'
+          project: ${{ secrets.VERCEL_PROJECT }}
           team_id: ${{ secrets.VERCEL_TEAM_ID }}
           token: ${{ secrets.VERCEL_TOKEN }}
-          secrets: ${{ toJSON(secrets) }}
+          secrets: '${{ toJSON(secrets) }}'
 ```

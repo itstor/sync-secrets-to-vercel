@@ -2,10 +2,10 @@ name: Sync Secrets to Vercel
 description: Sync Repository Secrets to Vercel Environment
 author: Akhmad Thoriq
 inputs:
-  regex:
-    description: Regex to match  the GitHub Secrets
+  prefix:
+    description: Prefix for the secrets to sync
     required: false
-    default: ^.*$
+    default: ENV_
   environments:
     description: The name of the Vercel Environment. If multiple, separate with comma
     required: false
@@ -22,6 +22,10 @@ inputs:
   secrets:
     description: The GitHub secrets encoded in JSON format
     required: true
+  cancel_on_fail:
+    description: Cancel the workflow if one of the secrets failed to sync
+    required: false
+    default: true
 
 runs:
   using: node20

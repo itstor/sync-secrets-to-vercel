@@ -1,11 +1,12 @@
 export interface Config {
   apiUrl: string;
   secrets: string;
-  regex: string;
+  prefix: string;
   environments: string[];
   project: string;
   teamId: string;
   token: string;
+  cancelOnFail: boolean;
 }
 
 export interface Environment {

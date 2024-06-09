@@ -2,14 +2,6 @@ import * as core from '@actions/core';
 
 import { CategorizedEnvironment, Environment, VercelEnvironmentResponse } from './types';
 
-export function validateRegex(regex: string): RegExp {
-  try {
-    return new RegExp(regex);
-  } catch (error: any) {
-    throw new Error(`Invalid regex: ${error.message}`);
-  }
-}
-
 export function validateTargetType(target: string[]): string[] {
   const validTargets = ['production', 'preview', 'development'];
 
@@ -22,14 +14,14 @@ export function validateTargetType(target: string[]): string[] {
   return [...new Set(target)];
 }
 
-export function parseAndFilterSecrets(githubSecrets: string, regex: RegExp): Record<string, string> {
+export function parseAndFilterSecrets(githubSecrets: string, prefix: string): Record<string, string> {
   const parsedSecrets = JSON.parse(githubSecrets);
   const parsedSecretsObj: Record<string, string> = {};
 
   Object.entries(parsedSecrets).forEach(([key, value]: [string, unknown]) => {
-    if (regex.test(key)) {
-      const strippedKey = key.replace(regex, '');
-      core.debug(`Listing secret: ${strippedKey}, with value: ${key}`);
+    if (key.startsWith(prefix)) {
+      const strippedKey = key.replace(prefix, '');
+      core.debug(`strippedKey: ${strippedKey}, originalKey: ${key}`);
       parsedSecretsObj[strippedKey] = value as string;
     }
   });

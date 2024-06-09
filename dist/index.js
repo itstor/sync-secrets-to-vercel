@@ -24950,11 +24950,12 @@ const core = __importStar(__nccwpck_require__(9093));
 exports.config = {
     apiUrl: 'https://api.vercel.com',
     secrets: core.getInput('secrets', { required: true }),
-    regex: core.getInput('regex', { required: false }) || '.*',
+    prefix: core.getInput('prefix', { required: false }) || 'ENV_',
     environments: core.getInput('environments').split(',') || ['production'],
     project: core.getInput('project', { required: true }),
     teamId: core.getInput('team_id', { required: true }),
     token: core.getInput('token', { required: true }),
+    cancelOnFail: core.getInput('cancel_on_fail', { required: false }) === 'true',
 };
 
 
@@ -24989,17 +24990,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.categorizeEnvironments = exports.parseAndFilterSecrets = exports.validateTargetType = exports.validateRegex = void 0;
+exports.categorizeEnvironments = exports.parseAndFilterSecrets = exports.validateTargetType = void 0;
 const core = __importStar(__nccwpck_require__(9093));
-function validateRegex(regex) {
-    try {
-        return new RegExp(regex);
-    }
-    catch (error) {
-        throw new Error(`Invalid regex: ${error.message}`);
-    }
-}
-exports.validateRegex = validateRegex;
 function validateTargetType(target) {
     const validTargets = ['production', 'preview', 'development'];
     for (const t of target) {
@@ -25010,13 +25002,13 @@ function validateTargetType(target) {
     return [...new Set(target)];
 }
 exports.validateTargetType = validateTargetType;
-function parseAndFilterSecrets(githubSecrets, regex) {
+function parseAndFilterSecrets(githubSecrets, prefix) {
     const parsedSecrets = JSON.parse(githubSecrets);
     const parsedSecretsObj = {};
     Object.entries(parsedSecrets).forEach(([key, value]) => {
-        if (regex.test(key)) {
-            const strippedKey = key.replace(regex, '');
-            core.debug(`Listing secret: ${strippedKey}, with value: ${key}`);
+        if (key.startsWith(prefix)) {
+            const strippedKey = key.replace(prefix, '');
+            core.debug(`strippedKey: ${strippedKey}, originalKey: ${key}`);
             parsedSecretsObj[strippedKey] = value;
         }
     });
@@ -25099,11 +25091,24 @@ const vercel_1 = __nccwpck_require__(8009);
 (function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const regex = (0, helper_1.validateRegex)(config_1.config.regex);
             const target = (0, helper_1.validateTargetType)(config_1.config.environments);
-            const parsedSecrets = (0, helper_1.parseAndFilterSecrets)(config_1.config.secrets, regex);
+            const parsedSecrets = (0, helper_1.parseAndFilterSecrets)(config_1.config.secrets, config_1.config.prefix);
             const vercelEnv = yield (0, vercel_1.getVercelEnv)({ project: config_1.config.project, teamId: config_1.config.teamId, token: config_1.config.token });
             const categorizedEnvs = (0, helper_1.categorizeEnvironments)(vercelEnv.envs, parsedSecrets);
+            const counter = {
+                added: {
+                    success: 0,
+                    failed: 0,
+                },
+                modified: {
+                    success: 0,
+                    failed: 0,
+                },
+                removed: {
+                    success: 0,
+                    failed: 0,
+                },
+            };
             for (const env of categorizedEnvs.added) {
                 const key = env.key;
                 const value = env.value;
@@ -25111,9 +25116,14 @@ const vercel_1 = __nccwpck_require__(8009);
                     core.info(`Adding Environment: ${key}`);
                     yield (0, vercel_1.createVercelEnv)({ project: config_1.config.project, teamId: config_1.config.teamId, token: config_1.config.token, key, value, target });
                     core.info(`Successfully added environment: ${key}`);
+                    counter.added.success++;
                 }
                 catch (error) {
+                    counter.added.failed++;
                     core.error(`Failed to add environment: ${key}, with error: ${error}`);
+                    if (config_1.config.cancelOnFail) {
+                        throw new Error(`Failed to add environment: ${key}, with error: ${error}`);
+                    }
                 }
             }
             for (const env of categorizedEnvs.modified) {
@@ -25124,9 +25134,14 @@ const vercel_1 = __nccwpck_require__(8009);
                     core.info(`Updating Environment: ${key}`);
                     yield (0, vercel_1.updateVercelEnv)({ project: config_1.config.project, teamId: config_1.config.teamId, token: config_1.config.token, key, value, id, target });
                     core.info(`Successfully updated environment: ${key}`);
+                    counter.modified.success++;
                 }
                 catch (error) {
+                    counter.modified.failed++;
                     core.error(`Failed to update environment: ${key}, with error: ${error}`);
+                    if (config_1.config.cancelOnFail) {
+                        throw new Error(`Failed to add environment: ${key}, with error: ${error}`);
+                    }
                 }
             }
             for (const env of categorizedEnvs.removed) {
@@ -25136,12 +25151,20 @@ const vercel_1 = __nccwpck_require__(8009);
                     core.info(`Removing Environment: ${key}`);
                     yield (0, vercel_1.deleteVercelEnv)({ project: config_1.config.project, teamId: config_1.config.teamId, token: config_1.config.token, id });
                     core.info(`Successfully removed environment: ${key}`);
+                    counter.removed.success++;
                 }
                 catch (error) {
+                    counter.removed.failed++;
                     core.error(`Failed to remove environment: ${key}, with error: ${error}`);
+                    if (config_1.config.cancelOnFail) {
+                        throw new Error(`Failed to add environment: ${key}, with error: ${error}`);
+                    }
                 }
             }
-            core.info('Successfully synced environments');
+            core.info(`Added: ${counter.added.success}, Failed: ${counter.added.failed}`);
+            core.info(`Modified: ${counter.modified.success}, Failed: ${counter.modified.failed}`);
+            core.info(`Removed: ${counter.removed.success}, Failed: ${counter.removed.failed}`);
+            core.info('Synced environments');
         }
         catch (error) {
             core.setFailed(error);
